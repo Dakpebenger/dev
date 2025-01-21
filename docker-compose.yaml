@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+
+  frontend:
+    image: rg.fr-par.scw.cloud/registry-cicd-example/saas-example-frontend:v0.0.9
+    container_name: fronted-saas
+    restart: always
+      ## Traefik labels
+    labels:
+      - "traefik.enable=true"
+      - traefik.http.routers.frontendsaas.rule=Host(`saas.civit.ovh`)
+      - traefik.http.routers.frontendsaas.tls=true
+      - traefik.http.routers.frontendsaas.tls.certresolver=prodresolver
+      - traefik.http.routers.frontendsaas.entrypoints=websecure
+    networks:
+      - proxy
+  api:
+    image: rg.fr-par.scw.cloud/registry-cicd-example/saas-example-backend:v0.0.5
+    container_name: api-smartcve
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - traefik.http.routers.apismartcve.rule=Host(`api.saas.civit.ovh`)
+      - traefik.http.routers.apismartcve.tls=true
+      - traefik.http.routers.apismartcve.tls.certresolver=prodresolver
+      - traefik.http.routers.apismartcve.entrypoints=websecure
+    networks:
+      - proxy
+
+##Volumes part
+volumes:
+  data-db:
+
+    ## Networks part
+networks:
+  proxy:
+    external: true
